@@ -1,0 +1,13 @@
+fs.writeFileSync('read.txt','welcome to my website')
+// fs.mkdirSync('website')
+// fs.writeFileSync('website/read.txt','welcome to my websites')
+// fs.appendFileSync('website/read.txt',' I m the founder')
+
+// const buf_data=fs.readFileSync('website/read.txt',"utf8")
+// console.log(buf_data)
+// const org_data = buf_data.toString()
+// console.log(org_data)
+// console.log('after data')
+// fs.renameSync('website/read.txt','website/reading.txt')
+// fs.unlinkSync('website/reading.txt')
+// fs.rmdirSync('website')

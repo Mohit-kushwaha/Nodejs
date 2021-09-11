@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+      integrity="sha512-PgQMlq+nqFLV4ylk1gwUOgm6CtIIXkKwaIHp/PAIWHzig/lKZSEGKEysh0TCVbHJXCLN7WetD8TFecIky75ZfQ=="
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        /* font-family: "Jost", sans-serif; */
+        font-family: "Quicksand", sans-serif;
+      }
+
+      body {
+        background: #f3f2ef;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        height: 100vh;
+        width: 100vw;
+      }
+
+      html,
+      body {
+        font-size: 62.5%;
+        height: 100%;
+      }
+
+      html {
+        background: #eee;
+      }
+
+      .box {
+        width: 20vw;
+        height: 60vh;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.2rem 3rem rgba(0, 0, 0, 0.2);
+        background: #a5bbdd;
+        position: relative;
+        overflow: hidden;
+        transform: translate3d(0, 0, 0);
+        min-width: 20rem;
+        min-height: 35rem;
+      }
+
+      .wave {
+        opacity: 0.3;
+        position: absolute;
+        top: 120%;
+        left: 50%;
+        background: white;
+        width: 50rem;
+        height: 50rem;
+        margin-left: -25rem;
+        margin-top: -25rem;
+        transform-origin: 50% 48%;
+        border-radius: 43%;
+        animation: drift 3000ms infinite linear;
+        z-index: 1;
+      }
+
+      .wave.-three {
+        animation: drift 5000ms infinite linear;
+        z-index: 2 !important;
+        opacity: 0.2;
+      }
+
+      .wave.-two {
+        animation: drift 7000ms infinite linear;
+        opacity: 0.1;
+        z-index: 3 !important;
+      }
+
+      .box:after {
+        content: "";
+        display: block;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 11;
+        transform: translate3d(0, 0, 0);
+      }
+
+      @keyframes drift {
+        from {
+          transform: rotate(0deg);
+        }
+        from {
+          transform: rotate(360deg);
+        }
+      }
+      .info {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 45%;
+        z-index: 4;
+      }
+
+      .location {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-weight: 800;
+        font-size: 3rem;
+      }
+
+      .fa-street-view {
+        animation: rotates 3s linear infinite alternate;
+      }
+
+      @keyframes rotates {
+        from {
+          transform: translateX(-0.5rem);
+        }
+        to {
+          transform: translateX(0.5rem);
+        }
+      }
+
+      #date {
+        text-align: center;
+        margin-top: 0.5rem;
+        color: #57606f;
+        font-size: 1.2rem;
+        font-weight: 300;
+        text-transform: uppercase;
+      }
+
+      .temp {
+        margin-top: 2.5rem;
+        text-align: center;
+        font-size: 3rem;
+      }
+
+      .tempmin_max {
+        text-align: center;
+        margin-top: 0.3rem;
+        font-weight: 300;
+        font-size: 1.2rem;
+        color: #57606f;
+      }
+
+      #weathercon {
+        height: 55%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 3em;
+      }
+
+      #weathercon .fas {
+        font-size: 6rem;
+        animation: fas-anime 3s linear infinite alternate;
+      }
+
+      @keyframes fas-anime {
+        from {
+          transform: scale(1.1);
+        }
+        to {
+          transform: scale(1.5);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .box {
+          width: 90vw;
+          height: 80vh;
+        }
+
+        .wave {
+          top: 85%;
+        }
+
+        #weathercon {
+          font-size: 5em;
+        }
+
+        .info {
+          font-size: 1.5rem;
+        }
+      }
+      @media (max-height: 500px) {
+        .box {
+          height: 80vh;
+        }
+
+        .wave {
+          top: 115%;
+        }
+      }
+      body > span {
+        width: 100vw;
+        text-align: center;
+        color: grey;
+      }
+    </style>
+    <title>Weather App</title>
+  </head>
+  <body>
+    <div class="box">
+      <div class="wave -one"></div>
+      <div class="wave -two"></div>
+      <div class="wave -three"></div>
+
+      <div id="weathercon">
+        <i class="fas fa-sun" style="color: #eccc68"></i>
+      </div>
+
+      <div class="info">
+        <h2 class="location">
+          <i class="fas fa-street-view" style="color: #fff"></i
+          >{%location%},{%country%}
+        </h2>
+        <p id="date">WED | nov 23 | 10:49AM</p>
+        <h1 class="temp">{%tempval%}&deg;C</h1>
+        <h3 class="tempmin_max">
+          Min {%tempmin% }&deg;C | Max {%tempmax%}&deg;C
+        </h3>
+      </div>
+    </div>
+
+    <script>
+      const curDate = document.getElementById("date");
+      let weathercon = document.getElementById("weathercon");
+
+      const tempStatus = "{%tempstatus%}";
+
+      //condition to check sunny or cloudy
+      if (tempStatus == "Sunny") {
+        weathercon.innerHTML =
+          "<i class='fas  fa-sun' style='color: #eccc68;'></i>";
+      } else if (tempStatus == "Clouds") {
+        weathercon.innerHTML =
+          "<i class='fas  fa-cloud' style='color: #f1f2f6;'></i>";
+      } else if (tempStatus == "Rainy") {
+        weathercon.innerHTML =
+          "<i class='fas  fa-cloud-rain' style='color: #a4b0be;'></i>";
+      } else {
+        weathercon.innerHTML =
+          "<i class='fas  fa-cloud' style='color:#f1f2f6;'></i>";
+      }
+
+      const getCurrentDay = () => {
+        var weekday = new Array(7);
+        weekday[0] = "Sunday";
+        weekday[1] = "Monday";
+        weekday[2] = "Tue";
+        weekday[3] = "Wed";
+        weekday[4] = "Thursday";
+        weekday[5] = "Friday";
+        weekday[6] = "Saturday";
+
+        let currentTime = new Date();
+        let day = weekday[currentTime.getDay()];
+        return day;
+      };
+
+      const getCurrentTime = () => {
+        var months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "June",
+          "July",
+          "Aug",
+          "Sept",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+
+        var now = new Date();
+        var month = months[now.getMonth() + 1];
+        var date = now.getDate();
+
+        let hours = now.getHours();
+        let mins = now.getMinutes();
+
+        let periods = "AM";
+
+        if (hours > 11) {
+          periods = "PM";
+          if (hours > 12) hours -= 12;
+        }
+        if (mins < 10) {
+          mins = "0" + mins;
+        }
+
+        return `${month} ${date} | ${hours}:${mins}${periods}`;
+      };
+
+      curDate.innerHTML = getCurrentDay() + " | " + getCurrentTime();
+    </script>
+  </body>
+</html>
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Oxygen&display=swap');
+:root {
+  --bg: #feecfc;
+  --snow: #7d39ff;
+  --snow-text: #ffebff;
+  --rain: #0181ff;
+  --rain-text: #c6f2ff;
+  --sunny: #fc8600;
+  --sunny-text: #fff9e9;
+  --hazy: #585344;
+  --clear: #988e34;
+  --cloudy: #909da2;
+  --misty: #7dada8;
+  --smoke: #9c4462;
+  --input-valid: #1c1d21;
+}
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+body, html {
+  height: 100vh;
+  width: 100vw;
+  padding:0;
+  margin:0;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Oxygen', sans-serif;
+  background: var(--bg);
+}
+ion-icon {
+  text-align: center;
+  font-size: 1.5em;
+  color: var(--sunny-text);
+}
+#more {
+  background: var(--input-valid);
+  -webkit-box-shadow: 1px 4px 10px 2px #1C1D21; 
+box-shadow: 1px 4px 10px 2px #1C1D21;
+  border-radius: 50%;
+  padding: 5px;
+}
+#close {
+  color: var(--input-valid);
+  font-size: 2em;
+  margin-left: auto;
+  padding: 20px;
+}
+h, p {
+  padding-left: 20px;
+}
+h {
+  margin: 0;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: var(--sunny-text);
+  text-transform: uppercase;
+}
+p {
+  font-size: 1em;
+  color: var(--sunny-text);
+}
+p1 {
+  font-size: 0.7em;
+  color: var(--sunny-text);
+}
+p::first-letter {
+  text-transform: uppercase;
+}
+#weather-status-icon {
+  height: 150px;
+  width: auto;
+}
+.app {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  width: 300px;
+  border-radius: 10px;
+  background: var(--sunny);
+}
+input, input:focus, input:valid {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  outline:0;
+  border:0;
+  background: transparent;
+  text-align: center;
+  padding: 20px;
+  letter-spacing: 3px;
+  font-size: 1.5em;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--sunny-text);
+  font-family: 'Oxygen', sans-serif;
+}
+input::placeholder {
+  color: var(--sunny-text);
+  padding: 20px;
+  letter-spacing: 2px;
+  font-family: 'Oxygen', sans-serif;
+}
+input:valid {
+  background: var(--input-valid);
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active
+{
+ -webkit-box-shadow: 0 0 0 50px var(--input-valid)  inset !important;
+}
+input:-webkit-autofill
+{
+ -webkit-text-fill-color: var(--sunny-text) !important;
+  -webkit-text-fill-background: var(--input-valid);
+}
+.description {
+  width: 30%;
+  height: 100px;
+}
+.description p {
+  display:table-caption;
+}
+.icon {
+  height: 180px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.temperature {
+  width: 50%;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+}
+.additional-info {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 100px;
+}
+.cube {
+  text-align: center;
+  height: 80px;
+  width: 80px;
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self:  center;
+}
+.cube p {
+  padding-left: 0;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+#cube-img, .cube-img {
+  height: 30px;
+  width: 30px;
+}
+.row {
+  text-align: center;
+  height: 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+/*more info*/
+.more {
+  margin-top: 70px;
+  height: 430px;
+  width: 300px;
+  position: absolute;
+  z-index: 1;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+.close {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: row-reverse;
+  align-items: center;
+}
+.rows {
+  height: 150px;
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+.box {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  -webkit-box-shadow: 1px 4px 10px 2px #1C1D21; 
+box-shadow: 1px 4px 10px 2px #1C1D21;
+  background: var(--input-valid);
+  color: var(--sunny-text);
+}
+.box>p {
+  font-size: 0.9em;
+}
+#icon {
+  height: 50px;
+  width: 50px;
+  padding: 5px;
+}
+</style>
+<body>
+    <div class="app">
+        <input type="text" id="input" placeholder="enter city"/>
+        <div class="more">
+          <div class="close">
+            <ion-icon id="close" name="close-circle"></ion-icon>
+          </div>
+          <div class="rows">
+          <div class="box">
+            
+            <p id="feels-like">feels like</p>
+            <img src="https://github.com/AnnaSmith3110/openWeather-API/blob/main/hot%20cold%20png.png?raw=true" id="icon">
+            
+          </div>
+           <div class="box">
+             
+             <p id="rain">rain</p>
+             <img src="https://github.com/AnnaSmith3110/openWeather-API/blob/main/umbrella%20png.png?raw=true" id="icon">
+           </div>
+          </div>
+           <div class="rows">
+          <div class="box">
+            
+            <p id="wind-speed">wind</p>
+            <img src="https://github.com/AnnaSmith3110/openWeather-API/blob/main/wind%20direction%20png.png?raw=true" id="icon">
+            
+          </div>
+           <div class="box">
+             
+             <p id="visibility">visibility</p>
+             <img src="https://github.com/AnnaSmith3110/openWeather-API/blob/main/visibility%20png.png?raw=true" id="icon">
+           </div>
+          </div>
+        </div>
+        <div class="description">
+          <p id="desc"></p>
+        </div>
+        <div class="icon">
+          <img src ="https://github.com/AnnaSmith3110/openWeather-API/blob/main/sunny%20png.png?raw=true" id="weather-status-icon">
+        </div>
+        <div class="temperature">
+          <p>weather</p>
+          <h id="temp">t °c</h>
+        </div>
+        <div class="additional-info">
+          <div class="cube">
+            <div class="row">
+            <p>humidity</p>
+            </div>
+            <div class="row">
+              <img src= "https://github.com/AnnaSmith3110/openWeather-API/blob/main/drop%20png.png?raw=true" id="cube-img">
+            </div>
+            <div class="row">
+              <p1 id="humidity">humid</p1>
+            </div>
+          </div>
+          <div class="cube">
+             <div class="row">
+            <p>wind</p>
+               </div>
+             <div class="row">
+            <img src="https://github.com/AnnaSmith3110/openWeather-API/blob/main/wind%20png.png?raw=true" id="cube-img">
+            </div>
+            <div class="row">
+              <p1 id="wind">wind</p1>
+            </div>
+          </div>
+          <div class="cube">
+            <ion-icon id="more" name="chevron-up"></ion-icon>
+          </div>
+        </div>
+      </div>
+</body>
+<script>
+    //store weather img
+//sunny, rainy, clear, snow, haze, cloudy, mist, smoke, default
+const img = [
+  "https://github.com/AnnaSmith3110/openWeather-API/blob/main/sunny%20png.png?raw=true",
+  "https://github.com/AnnaSmith3110/openWeather-API/blob/main/rainy%20png.png?raw=true",
+  "https://github.com/AnnaSmith3110/openWeather-API/blob/main/clear%20png.png?raw=true",
+  "https://github.com/AnnaSmith3110/openWeather-API/blob/main/snow%20png.png?raw=true",
+  "https://github.com/AnnaSmith3110/openWeather-API/blob/main/haze%20png.png?raw=true",
+  "https://github.com/AnnaSmith3110/openWeather-API/blob/main/cloudy%20png.png?raw=true",
+"https://github.com/AnnaSmith3110/openWeather-API/blob/main/mist%20png.png?raw=true", "https://github.com/AnnaSmith3110/openWeather-API/blob/main/smoke%20png.png?raw=true", "" 
+];
+//get vars
+const bg = document.querySelector(".app");
+const input = document.querySelector("#input");
+const desc = document.querySelector("#desc");
+const temp = document.querySelector("#temp");
+const wind = document.querySelector("#wind");
+const humid = document.querySelector("#humidity");
+const status = document.querySelector("#weather-status-icon");
+const moreButton = document.querySelector("#more");
+const more = document.querySelector(".more");
+const closeButton = document.querySelector("#close");
+const feelsLike =  document.querySelector("#feels-like");
+const rain = document.querySelector("#rain");
+const windSpeed = document.querySelector("#wind-speed");
+const visibility = document.querySelector("#visibility");
+//fetch API
+input.addEventListener("input", function () {
+  fetch(
+    "https://api.openweathermap.org/data/2.5/weather?q=" +
+      input.value +
+      "&units=metric&appid=3d162782437b50f28b742ecd8b1337ce"
+  )
+    .then((response) => response.json())
+    .then((data) => {
+    
+    console.log(data);
+    
+      var description = data["weather"][0]["description"];
+      var Temp = data["main"]["temp"];
+      var windspeed = data["wind"]["speed"];
+      var Humidity = data["main"]["humidity"];
+      var feelslike = data['main']['feels_like']; 
+      
+      var visible = data['visibility'];
+      
+      desc.innerHTML = description;
+      temp.innerHTML = Temp + "° c";
+      wind.innerHTML = windspeed;
+      humid.innerHTML = Humidity;
+      feelsLike.innerHTML = "feels like " + feelslike + " ° c";
+      //rain.innerHTML = "rain " + Rain;
+      windSpeed.innerHTML = "windspeed " + windspeed;
+      visibility.innerHTML = "visibility " + visible;
+    
+    
+      //change pic according to weather data
+      let weather = data["weather"][0]["main"];
+      //valid status = sunny, rainy, clear, snow, haze, cloudy
+      switch (weather) {
+        case "Sunny":
+          status.src = img[0];
+          bg.style.background = "var(--sunny)";
+          more.style.background = "var(--sunny)";
+          break;
+        case "Rain":
+          status.src = img[1];
+          bg.style.background = "var(--rain)";
+          more.style.background = "var(--rain)";
+          break;
+        case "Light intensity drizzle":
+          status.src = img[1];
+          bg.style.background = "var(--rain)";
+          more.style.background = "var(--rain)";
+          break;
+        case "Clear":
+          status.src = img[2];
+          bg.style.background = "var(--clear)";
+          more.style.background = "var(--clear)";
+          break;
+        case "Snow":
+          status.src = img[3];
+          bg.style.background = "var(--snow)";
+          more.style.background = "var(--snow)";
+          break;
+        case "Haze":
+          status.src = img[4];
+          bg.style.background = "var(--hazy)";
+          more.style.background = "var(--hazy)";
+          break;
+        case "Clouds":
+          status.src = img[5];
+          bg.style.background = "var(--cloudy)";
+          more.style.background = "var(--cloudy)";
+          break;
+        case "Mist":
+          bg.style.background = "var(--misty)";
+          more.style.background = "var(--misty)";
+          status.src = img[6];
+          break;
+        case "Smoke":
+          bg.style.background = "var(--smoke)";
+          more.style.background = "var(--smoke)";
+          status.src = img[7];
+          break;
+        default:
+          status.src = img[8];
+      }
+    
+    console.log(data);
+    })
+    .catch((err) => console.log("error"));
+});
+
+//open more div
+moreButton.addEventListener("click", function () {
+  more.style.display = "flex";
+  more.style.background = "inherit";
+});
+
+//close more div
+closeButton.addEventListener("click", function () {
+  more.style.display = "none";
+  more.style.background = "inherit";
+});
+
+</script>
+</html> -->
